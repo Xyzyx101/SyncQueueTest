@@ -21,11 +21,6 @@ bool operator!=(const Resource::Token& a, const Resource::Token& b);
 
 	struct WorkState_t
 	{
-		/*WorkState_t() :
-			LastToken(0),
-			Work(0),
-			Exclusive(0) {
-		};*/
 		uint64_t LastToken;
 		uint64_t Work;
 		uint64_t Exclusive;

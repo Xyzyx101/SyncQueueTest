@@ -3,7 +3,7 @@
 using namespace Resource;
 
 std::unique_ptr<Token> Director::Acquire(bool exclusive) {
-	auto state = State.load();
+	auto state = State.load(std::memory_order::memory_order_acquire);
 	if( (state.Work & (1llu << 63llu)) > 0 ) { return nullptr; } // director can't hold anymore
 	auto newState = CreateAcquireState(state, exclusive);
 	while(!State.compare_exchange_weak(
@@ -25,7 +25,7 @@ inline WorkState_t Resource::Director::CreateAcquireState(WorkState_t in, bool e
 }
 
 bool Director::CanWork(TokenIdx index) {
-	auto state = State.load();
+	auto state = State.load(std::memory_order::memory_order_acquire);
 	uint64_t shift = state.LastToken - index;
 	int oldestIncomplete = 0;
 	while((state.Work >>= 1llu) > 0llu) { oldestIncomplete++; }
@@ -42,7 +42,7 @@ bool Director::CanWork(TokenIdx index) {
 }
 
 void Director::Release(TokenIdx index) {
-	auto state = State.load();
+	auto state = State.load(std::memory_order::memory_order_acquire);
 	auto newState = CreateReleaseState(state, index);
 	while(!State.compare_exchange_weak(
 		state,

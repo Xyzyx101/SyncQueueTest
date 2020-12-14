@@ -1,8 +1,8 @@
 #include "Producer.h"
+#include "Globals.h"
 #include <chrono>
-using namespace std::chrono;
 
-extern const int USERS;
+using namespace std::chrono;
 
 Producer::Producer(SyncQueue<Message>& queue) : Queue(queue), Dist(0.0, 1.0) {
 	Gen.seed((uint32_t)system_clock::now().time_since_epoch().count());

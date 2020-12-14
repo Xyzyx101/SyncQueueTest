@@ -9,6 +9,7 @@
 #include "Worker.h"
 #include "WorkerPool.h"
 #include "Resource.h"
+#include "Globals.h"
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -17,10 +18,6 @@ void AsyncSend(Producer* producer, const int64_t messageCount, high_resolution_c
 	producer->Produce(messageCount, sendDuration);
 }
 
-extern const std::chrono::high_resolution_clock::duration SYNC_WORK_DURATION{ 50us };
-extern const std::chrono::high_resolution_clock::duration ASYNC_WORK_DURATION{ 50ms };
-extern const std::chrono::high_resolution_clock::duration RECEIVE_DURATION{ 1s };
-extern const int USERS{ 4 };
 const int64_t MESSAGES_PER_SECOND = 100;
 const int64_t MESSAGE_COUNT = duration_cast<seconds>(RECEIVE_DURATION).count() * MESSAGES_PER_SECOND;
 const std::chrono::high_resolution_clock::duration TOTAL_WORK_DURATION{ (SYNC_WORK_DURATION + ASYNC_WORK_DURATION) * MESSAGE_COUNT };

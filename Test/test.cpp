@@ -180,32 +180,32 @@ int getTokenId(const std::string& str) {
 	return std::stoi(tokenStr);
 }
 
-TEST(Resource, Exclusive_Even_With_Multiple_Work_Threads) {
-	std::mutex mtx;
-	std::vector<std::string> results;
-	auto dir = Director::Create();
-	const int workerCount = 8;
-	std::vector<std::future<void>> workers;
-	for(int i = 0; i < workerCount; ++i) {
-		workers.emplace_back(std::async(std::launch::async, Worker(), i, dir.get(), &mtx, &results));
-	}
-	//std::this_thread::sleep_for(1s);
-	bool done = false;
-	auto timeout = std::async(std::launch::async, [&done]() {
-		std::this_thread::sleep_for(1s);
-		EXPECT_TRUE(done) << "Timed Out!  Possible deadlock!";
-		});
-	for(auto& w : workers) {
-		w.get();
-	}
-	done = true;
-	timeout.get();
-	for(auto startIt = results.begin(); startIt < results.end(); ++startIt) {
-		std::clog << *startIt << std::endl;
-		if(startIt->find("Ex: Start") != std::string::npos) {
-			auto endIt = startIt + 1;
-			EXPECT_TRUE(endIt->find("Ex: Done") != std::string::npos) << "Nothing between start and end of exclusive jobs";
-			EXPECT_EQ(getTokenId(*startIt), getTokenId(*endIt)) << "Start and end should have the same token";
-		}
-	}
-}
+//TEST(Resource, Exclusive_Even_With_Multiple_Work_Threads) {
+//	std::mutex mtx;
+//	std::vector<std::string> results;
+//	auto dir = Director::Create();
+//	const int workerCount = 8;
+//	std::vector<std::future<void>> workers;
+//	for(int i = 0; i < workerCount; ++i) {
+//		workers.emplace_back(std::async(std::launch::async, Worker(), i, dir.get(), &mtx, &results));
+//	}
+//	//std::this_thread::sleep_for(1s);
+//	bool done = false;
+//	auto timeout = std::async(std::launch::async, [&done]() {
+//		std::this_thread::sleep_for(1s);
+//		EXPECT_TRUE(done) << "Timed Out!  Possible deadlock!";
+//		});
+//	for(auto& w : workers) {
+//		w.get();
+//	}
+//	done = true;
+//	timeout.get();
+//	for(auto startIt = results.begin(); startIt < results.end(); ++startIt) {
+//		std::clog << *startIt << std::endl;
+//		if(startIt->find("Ex: Start") != std::string::npos) {
+//			auto endIt = startIt + 1;
+//			EXPECT_TRUE(endIt->find("Ex: Done") != std::string::npos) << "Nothing between start and end of exclusive jobs";
+//			EXPECT_EQ(getTokenId(*startIt), getTokenId(*endIt)) << "Start and end should have the same token";
+//		}
+//	}
+//}
